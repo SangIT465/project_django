@@ -1,0 +1,116 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load tour_extras %}
+
+{% block title %}Thanh toán chuyển khoản - Du Lịch Việt{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div class="container">
+        <h1 class="display-4">Thanh toán chuyển khoản</h1>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{% url 'core:home' %}" class="text-white">Trang chủ</a></li>
+                <li class="breadcrumb-item active text-white" aria-current="page">Thanh toán chuyển khoản</li>
+            </ol>
+        </nav>
+    </div>
+</div>
+
+<section class="py-5">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="card mb-4">
+                    <div class="card-header bg-primary text-white">
+                        <h4 class="mb-0">Thông tin chuyển khoản</h4>
+                    </div>
+                    <div class="card-body">
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle me-2"></i> Vui lòng chuyển khoản đến thông tin tài khoản dưới đây và giữ lại chứng từ chuyển khoản.
+                        </div>
+                        
+                        <div class="row mb-4">
+                            <div class="col-md-6 mb-3 mb-md-0">
+                                <div class="card h-100">
+                                    <div class="card-body">
+                                        <h5 class="card-title">Thông tin ngân hàng</h5>
+                                        <ul class="list-unstyled">
+                                            <li><strong>Ngân hàng:</strong> {{ bank_info.bank_name }}</li>
+                                            <li><strong>Số tài khoản:</strong> {{ bank_info.account_number }}</li>
+                                            <li><strong>Chủ tài khoản:</strong> {{ bank_info.account_name }}</li>
+                                            <li><strong>Chi nhánh:</strong> {{ bank_info.branch }}</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="card h-100">
+                                    <div class="card-body">
+                                        <h5 class="card-title">Thông tin thanh toán</h5>
+                                        <ul class="list-unstyled">
+                                            <li><strong>Số tiền:</strong> {{ booking.total_price|floatformat:0 }} VNĐ</li>
+                                            <li><strong>Nội dung chuyển khoản:</strong> <span class="text-danger">{{ bank_info.message }}</span></li>
+                                            <li><strong>Mã đặt tour:</strong> {{ booking.booking_number }}</li>
+                                        </ul>
+                                        <div class="alert alert-warning mt-3 mb-0">
+                                            <strong>Lưu ý:</strong> Vui lòng ghi đúng nội dung chuyển khoản để chúng tôi có thể xác nhận thanh toán của bạn.
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <h5>Hướng dẫn thanh toán</h5>
+                            <ol>
+                                <li>Chuyển khoản theo thông tin đã cung cấp ở trên.</li>
+                                <li>Chụp lại biên lai/màn hình xác nhận chuyển khoản.</li>
+                                <li>Gửi ảnh chụp màn hình xác nhận chuyển khoản đến email <a href="mailto:payment@dulichviet.com">payment@dulichviet.com</a> hoặc số điện thoại 1900 1234 (qua Zalo/Viber).</li>
+                                <li>Chúng tôi sẽ xác nhận thanh toán của bạn trong vòng 24 giờ làm việc.</li>
+                            </ol>
+                        </div>
+                        
+                        <form action="{% url 'bookings:booking_success' booking_id=booking.id %}" method="post" class="text-center">
+                            {% csrf_token %}
+                            <div class="alert alert-warning mb-4">
+                                <i class="fas fa-exclamation-triangle me-2"></i> Đơn đặt tour của bạn sẽ được xác nhận sau khi chúng tôi nhận được thanh toán.
+                            </div>
+                            <button type="submit" class="btn btn-success">Tôi đã chuyển khoản</button>
+                        </form>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header bg-light">
+                        <h5 class="mb-0">Thông tin đơn hàng</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6 mb-3 mb-md-0">
+                                <h5>{{ booking.tour.title }}</h5>
+                                <p class="text-muted">{{ booking.tour_date.start_date|date:"d/m/Y" }} - {{ booking.tour_date.end_date|date:"d/m/Y" }}</p>
+                                <p><strong>Mã đơn hàng:</strong> {{ booking.booking_number }}</p>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span>Người lớn x {{ booking.adults }}:</span>
+                                    <span>{{ booking.adults|multiply:booking.tour_date.tour_price|floatformat:0 }} VNĐ</span>
+                                </div>
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span>Trẻ em x {{ booking.children }}:</span>
+                                    <span>{{ booking.children|multiply:booking.tour_date.tour_price|multiply:0.7|floatformat:0 }} VNĐ</span>
+                                </div>
+                                <div class="d-flex justify-content-between pt-2 border-top mt-2">
+                                    <strong>Tổng cộng:</strong>
+                                    <strong class="text-primary">{{ booking.total_price|floatformat:0 }} VNĐ</strong>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

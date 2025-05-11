@@ -1,0 +1,219 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Đặt tour: {{ tour.title }} - Du Lịch Việt{% endblock %}
+
+{% block extra_css %}
+<style>
+    .booking-summary-item {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 0.5rem;
+    }
+    .price-calculation {
+        border-top: 1px solid #dee2e6;
+        padding-top: 1rem;
+        margin-top: 1rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div class="container">
+        <h1 class="display-4">Đặt tour</h1>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{% url 'core:home' %}" class="text-white">Trang chủ</a></li>
+                <li class="breadcrumb-item"><a href="{{ tour.get_absolute_url }}" class="text-white">{{ tour.title }}</a></li>
+                <li class="breadcrumb-item active text-white" aria-current="page">Đặt tour</li>
+            </ol>
+        </nav>
+    </div>
+</div>
+
+<section class="py-5">
+    <div class="container">
+        <div class="row">
+            <!-- Booking Form -->
+            <div class="col-lg-8 mb-4 mb-lg-0">
+                <div class="booking-form-card">
+                    <h3 class="mb-4">Thông tin đặt tour</h3>
+                    
+                    <!-- Tour Date Selection -->
+                    <div class="mb-4">
+                        <h5>Chọn ngày khởi hành</h5>
+                        <select id="tourDateSelect" class="form-select">
+                            {% for date in available_dates %}
+                                <option value="{{ date.id }}" data-price="{{ date.tour_price }}" data-seats="{{ date.available_seats }}" {% if date.id == tour_date.id %}selected{% endif %}>
+                                    {{ date.start_date|date:"d/m/Y" }} - {{ date.end_date|date:"d/m/Y" }} (Còn {{ date.available_seats }} chỗ)
+                                </option>
+                            {% endfor %}
+                        </select>
+                        <div class="mt-2 small text-muted">
+                            <i class="fas fa-info-circle me-1"></i> Còn <span id="availableSeats">{{ tour_date.available_seats }}</span> chỗ trống cho ngày khởi hành này
+                        </div>
+                    </div>
+                    
+                    <!-- Contact Information Form -->
+                    <form id="bookingForm" method="post" action="{% url 'bookings:booking_form_with_date' tour_id=tour.id date_id=tour_date.id %}">
+                        {% csrf_token %}
+                        
+                        <h5 class="mb-3">Thông tin liên hệ</h5>
+                        <div class="row mb-4">
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.full_name.id_for_label }}" class="form-label">Họ và tên <span class="text-danger">*</span></label>
+                                {{ form.full_name }}
+                                {% if form.full_name.errors %}
+                                    <div class="text-danger">{{ form.full_name.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.email.id_for_label }}" class="form-label">Email <span class="text-danger">*</span></label>
+                                {{ form.email }}
+                                {% if form.email.errors %}
+                                    <div class="text-danger">{{ form.email.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.phone.id_for_label }}" class="form-label">Số điện thoại <span class="text-danger">*</span></label>
+                                {{ form.phone }}
+                                {% if form.phone.errors %}
+                                    <div class="text-danger">{{ form.phone.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.address.id_for_label }}" class="form-label">Địa chỉ <span class="text-danger">*</span></label>
+                                {{ form.address }}
+                                {% if form.address.errors %}
+                                    <div class="text-danger">{{ form.address.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <h5 class="mb-3">Số lượng hành khách</h5>
+                        <div class="row mb-4">
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.adults.id_for_label }}" class="form-label">Người lớn <span class="text-danger">*</span></label>
+                                {{ form.adults }}
+                                <div class="form-text">Từ 12 tuổi trở lên</div>
+                                {% if form.adults.errors %}
+                                    <div class="text-danger">{{ form.adults.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.children.id_for_label }}" class="form-label">Trẻ em</label>
+                                {{ form.children }}
+                                <div class="form-text">Từ 2-11 tuổi (70% giá người lớn)</div>
+                                {% if form.children.errors %}
+                                    <div class="text-danger">{{ form.children.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <h5 class="mb-3">Yêu cầu đặc biệt</h5>
+                        <div class="mb-4">
+                            {{ form.special_request }}
+                            <div class="form-text">Vui lòng cho chúng tôi biết nếu bạn có yêu cầu đặc biệt (ăn chay, dị ứng...)</div>
+                        </div>
+                        
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary btn-lg">Tiếp tục</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            
+            <!-- Booking Summary -->
+            <div class="col-lg-4">
+                <div class="card mb-4 booking-summary">
+                    <div class="card-body">
+                        <h4 class="card-title mb-3">Tóm tắt đặt tour</h4>
+                        
+                        <div class="booking-detail">
+                            <h5>{{ tour.title }}</h5>
+                            <div class="d-flex align-items-center mb-2">
+                                <i class="fas fa-map-marker-alt text-primary me-2"></i>
+                                <span>{{ tour.destination.name }}</span>
+                            </div>
+                            <div class="d-flex align-items-center mb-2">
+                                <i class="fas fa-calendar-alt text-primary me-2"></i>
+                                <span>{{ tour_date.start_date|date:"d/m/Y" }} - {{ tour_date.end_date|date:"d/m/Y" }}</span>
+                            </div>
+                            <div class="d-flex align-items-center">
+                                <i class="fas fa-clock text-primary me-2"></i>
+                                <span>{{ tour.duration }} ngày</span>
+                            </div>
+                        </div>
+                        
+                        <div class="price-calculation">
+                            <div class="booking-summary-item">
+                                <span>Giá tour/người lớn:</span>
+                                <span id="adultPrice" data-price="{{ tour_date.tour_price }}">{{ tour_date.tour_price|floatformat:0 }} VNĐ</span>
+                            </div>
+                            <div class="booking-summary-item">
+                                <span>Người lớn x <span id="adultCount">1</span>:</span>
+                                <span id="adultSubtotal">{{ tour_date.tour_price|floatformat:0 }} VNĐ</span>
+                            </div>
+                            <div class="booking-summary-item">
+                                <span>Trẻ em x <span id="childCount">0</span>:</span>
+                                <span id="childSubtotal">0 VNĐ</span>
+                            </div>
+                            <div class="booking-summary-item mt-3">
+                                <strong>Tổng cộng:</strong>
+                                <strong id="grandTotal" class="text-primary">{{ tour_date.tour_price|floatformat:0 }} VNĐ</strong>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title"><i class="fas fa-info-circle text-primary me-2"></i> Thông tin liên hệ</h5>
+                        <ul class="list-unstyled mb-0">
+                            <li class="mb-2"><i class="fas fa-phone text-primary me-2"></i> 1900 1234</li>
+                            <li class="mb-2"><i class="fas fa-envelope text-primary me-2"></i> info@dulichviet.com</li>
+                            <li><i class="fas fa-clock text-primary me-2"></i> 8:00 - 17:30 (Thứ Hai - Thứ Bảy)</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/booking.js' %}"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Update URL when changing date
+        const dateSelect = document.getElementById('tourDateSelect');
+        if (dateSelect) {
+            dateSelect.addEventListener('change', function() {
+                const tourId = {{ tour.id }};
+                const dateId = this.value;
+                window.location.href = `/bookings/tour/${tourId}/date/${dateId}/`;
+            });
+        }
+        
+        // Update counts in summary
+        const adultsInput = document.getElementById('id_adults');
+        const childrenInput = document.getElementById('id_children');
+        const adultCount = document.getElementById('adultCount');
+        const childCount = document.getElementById('childCount');
+        
+        if (adultsInput && adultCount) {
+            adultsInput.addEventListener('change', function() {
+                adultCount.textContent = this.value;
+            });
+        }
+        
+        if (childrenInput && childCount) {
+            childrenInput.addEventListener('change', function() {
+                childCount.textContent = this.value;
+            });
+        }
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,377 @@
+{% extends 'base.html' %}
+{% load tour_extras %}
+
+{% block title %}{{ tour.title }} - Du Lịch Việt{% endblock %}
+
+{% block content %}
+
+<div class="page-header">
+    <div class="container">
+        <h1 class="display-4">{{ tour.title }}</h1>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{% url 'core:home' %}" class="text-white">Trang chủ</a></li>
+                <li class="breadcrumb-item"><a href="{% url 'tours:tour_list' %}" class="text-white">Tour du lịch</a></li>
+                <li class="breadcrumb-item active text-white" aria-current="page">{{ tour.title }}</li>
+            </ol>
+        </nav>
+    </div>
+</div>
+
+<section class="py-5">
+    <div class="container">
+        <div class="row">
+            <!-- Main Content -->
+            <div class="col-lg-8">
+                <!-- Tour Gallery -->
+                <div class="tour-gallery mb-4">
+                    <div id="tourCarousel" class="carousel slide" data-bs-ride="carousel">
+                        <div class="carousel-indicators">
+                            <button type="button" data-bs-target="#tourCarousel" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
+                            {% for image in tour.images.all %}
+                                <button type="button" data-bs-target="#tourCarousel" data-bs-slide-to="{{ forloop.counter }}" aria-label="Slide {{ forloop.counter|add:1 }}"></button>
+                            {% endfor %}
+                        </div>
+                        <div class="carousel-inner rounded">
+                            <div class="carousel-item active">
+                                <img src="{{ tour.main_image }}" class="d-block w-100" alt="{{ tour.title }}" style="height: 400px; object-fit: cover;">
+                            </div>
+                            {% for image in tour.images.all %}
+                                <div class="carousel-item">
+                                    <img src="{{ image.image_url }}" class="d-block w-100" alt="{{ image.caption }}" style="height: 400px; object-fit: cover;">
+                                </div>
+                            {% endfor %}
+                        </div>
+                        <button class="carousel-control-prev" type="button" data-bs-target="#tourCarousel" data-bs-slide="prev">
+                            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                            <span class="visually-hidden">Trước</span>
+                        </button>
+                        <button class="carousel-control-next" type="button" data-bs-target="#tourCarousel" data-bs-slide="next">
+                            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                            <span class="visually-hidden">Sau</span>
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Tour Information -->
+                <div class="tour-info mb-4">
+                    <div class="row">
+                        <div class="col-md-3 col-6 mb-3">
+                            <div class="text-center p-3">
+                                <i class="fas fa-calendar-alt fa-2x text-primary mb-2"></i>
+                                <h6>Thời gian</h6>
+                                <p class="mb-0">{{ tour.duration }} ngày</p>
+                            </div>
+                        </div>
+                        <div class="col-md-3 col-6 mb-3">
+                            <div class="text-center p-3">
+                                <i class="fas fa-map-marker-alt fa-2x text-primary mb-2"></i>
+                                <h6>Điểm đến</h6>
+                                <p class="mb-0">{{ tour.destination.name }}</p>
+                            </div>
+                        </div>
+                        <div class="col-md-3 col-6 mb-3">
+                            <div class="text-center p-3">
+                                <i class="fas fa-{{ tour.transport }} fa-2x text-primary mb-2"></i>
+                                <h6>Phương tiện</h6>
+                                <p class="mb-0">{{ tour.get_transport_display }}</p>
+                            </div>
+                        </div>
+                        <div class="col-md-3 col-6 mb-3">
+                            <div class="text-center p-3">
+                                <i class="fas fa-star fa-2x text-primary mb-2"></i>
+                                <h6>Đánh giá</h6>
+                                <p class="mb-0">{{ avg_rating|floatformat:1 }}/5 ({{ reviews.count }})</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Tour Description -->
+                <div class="mb-5">
+                    <h3 class="mb-3">Giới thiệu</h3>
+                    <p>{{ tour.short_description }}</p>
+                    <div>{{ tour.description|linebreaks }}</div>
+                </div>
+                
+                <!-- Tour Itinerary -->
+                <div class="mb-5">
+                    <h3 class="mb-3">Lịch trình tour</h3>
+                    <div class="accordion" id="accordionItinerary">
+                        {% with itinerary_lines=tour.itinerary|split:'\n' %}
+                            {% for day in itinerary_lines %}
+                                {% if day|length > 0 %}
+                                    <div class="accordion-item mb-3">
+                                        <h2 class="accordion-header" id="heading{{ forloop.counter }}">
+                                            <button class="accordion-button {% if not forloop.first %}collapsed{% endif %}" type="button" data-bs-toggle="collapse" data-bs-target="#collapse{{ forloop.counter }}" aria-expanded="{% if forloop.first %}true{% else %}false{% endif %}" aria-controls="collapse{{ forloop.counter }}">
+                                                {% if 'Ngày' in day %}
+                                                    {{ day }}
+                                                {% else %}
+                                                    Ngày {{ forloop.counter }}
+                                                {% endif %}
+                                            </button>
+                                        </h2>
+                                        <div id="collapse{{ forloop.counter }}" class="accordion-collapse collapse {% if forloop.first %}show{% endif %}" aria-labelledby="heading{{ forloop.counter }}" data-bs-parent="#accordionItinerary">
+                                            <div class="accordion-body">
+                                                {{ day|linebreaks }}
+                                            </div>
+                                        </div>
+                                    </div>
+                                {% endif %}
+                            {% endfor %}
+                        {% endwith %}
+                    </div>
+                </div>
+                
+                <!-- Includes & Excludes -->
+                <div class="row mb-5">
+                    <div class="col-md-6 mb-4 mb-md-0">
+                        <div class="card h-100">
+                            <div class="card-header bg-primary text-white">
+                                <h5 class="mb-0">Dịch vụ bao gồm</h5>
+                            </div>
+                            <div class="card-body">
+                                <ul class="list-group list-group-flush">
+                                    {% with includes_items=tour.includes|split:'\n' %}
+                                        {% for item in includes_items %}
+                                            {% if item|length > 0 %}
+                                                <li class="list-group-item">
+                                                    <i class="fas fa-check text-success me-2"></i> {{ item }}
+                                                </li>
+                                            {% endif %}
+                                        {% endfor %}
+                                    {% endwith %}
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card h-100">
+                            <div class="card-header bg-secondary text-white">
+                                <h5 class="mb-0">Dịch vụ không bao gồm</h5>
+                            </div>
+                            <div class="card-body">
+                                <ul class="list-group list-group-flush">
+                                    {% with excludes_items=tour.excludes|split:'\n' %}
+                                        {% for item in excludes_items %}
+                                            {% if item|length > 0 %}
+                                                <li class="list-group-item">
+                                                    <i class="fas fa-times text-danger me-2"></i> {{ item }}
+                                                </li>
+                                            {% endif %}
+                                        {% endfor %}
+                                    {% endwith %}
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Terms and Conditions -->
+                <div class="mb-5">
+                    <h3 class="mb-3">Điều khoản & Lưu ý</h3>
+                    <div class="card">
+                        <div class="card-body">
+                            {{ tour.terms|linebreaks }}
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Reviews -->
+                <div class="mb-5">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h3 class="mb-0">Đánh giá từ khách hàng</h3>
+                        <span class="badge bg-primary p-2">{{ avg_rating|floatformat:1 }}/5 <i class="fas fa-star text-warning"></i></span>
+                    </div>
+                    
+                    {% if reviews %}
+                        {% for review in reviews %}
+                            <div class="review-card">
+                                <div class="review-header">
+                                    <h5 class="mb-0">{{ review.name }}</h5>
+                                    <div class="review-rating">
+                                        {% for i in "12345" %}
+                                            {% if forloop.counter <= review.rating %}
+                                                <i class="fas fa-star"></i>
+                                            {% else %}
+                                                <i class="far fa-star"></i>
+                                            {% endif %}
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                                <div class="review-date mb-2 text-muted">
+                                    <small>{{ review.created_at|date:"d/m/Y" }}</small>
+                                </div>
+                                <p class="mb-0">{{ review.comment }}</p>
+                            </div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="alert alert-info">
+                            Chưa có đánh giá nào cho tour này. Hãy là người đầu tiên chia sẻ trải nghiệm của bạn!
+                        </div>
+                    {% endif %}
+                    
+                    <!-- Review Form -->
+                    <div class="card mt-4">
+                        <div class="card-header bg-light">
+                            <h4 class="mb-0">Đánh giá tour</h4>
+                        </div>
+                        <div class="card-body">
+                            <form method="post" action="{{ tour.get_absolute_url }}">
+                                {% csrf_token %}
+                                <div class="mb-3">
+                                    <label for="{{ review_form.name.id_for_label }}" class="form-label">Họ tên</label>
+                                    {{ review_form.name }}
+                                </div>
+                                <div class="mb-3">
+                                    <label for="{{ review_form.email.id_for_label }}" class="form-label">Email</label>
+                                    {{ review_form.email }}
+                                </div>
+                                <div class="mb-3">
+                                    <label for="{{ review_form.rating.id_for_label }}" class="form-label">Đánh giá</label>
+                                    {{ review_form.rating }}
+                                </div>
+                                <div class="mb-3">
+                                    <label for="{{ review_form.comment.id_for_label }}" class="form-label">Nhận xét</label>
+                                    {{ review_form.comment }}
+                                </div>
+                                <button type="submit" class="btn btn-primary">Gửi đánh giá</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Related Tours -->
+                <div>
+                    <h3 class="mb-3">Tour liên quan</h3>
+                    <div class="row">
+                        {% for related_tour in related_tours %}
+                            <div class="col-md-6 mb-4">
+                                {% include 'components/tour_card.html' with tour=related_tour %}
+                            </div>
+                        {% empty %}
+                            <div class="col-12">
+                                <div class="alert alert-info">Không có tour liên quan.</div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Sidebar -->
+            <div class="col-lg-4">
+                <!-- Price Card -->
+                <div class="tour-price-card mb-4">
+                    <h3 class="tour-detail-price">
+                        {% if tour.is_on_sale %}
+                            <del>{{ tour.price|floatformat:0 }} VNĐ</del>
+                        {% endif %}
+                        {{ tour.final_price|floatformat:0 }} VNĐ
+                    </h3>
+                    <p class="text-muted mb-4">Giá/người (đã gồm VAT)</p>
+                    
+                    <!-- Upcoming Dates -->
+                    <h5 class="mb-3">Lịch khởi hành sắp tới</h5>
+                    {% if upcoming_dates %}
+                        <div class="list-group mb-4">
+                            {% for date in upcoming_dates %}
+                                <a href="{% url 'bookings:booking_form_with_date' tour_id=tour.id date_id=date.id %}" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <i class="fas fa-calendar-alt text-primary me-2"></i>
+                                        {{ date.start_date|date:"d/m/Y" }} - {{ date.end_date|date:"d/m/Y" }}
+                                    </div>
+                                    <span class="badge bg-primary rounded-pill">{{ date.available_seats }} chỗ</span>
+                                </a>
+                            {% endfor %}
+                        </div>
+                        <a href="{% url 'bookings:booking_form' tour_id=tour.id %}" class="btn btn-primary w-100 mb-3">Đặt tour ngay</a>
+                    {% else %}
+                        <div class="alert alert-warning">
+                            <i class="fas fa-exclamation-triangle me-2"></i> Hiện không có lịch khởi hành nào cho tour này.
+                        </div>
+                    {% endif %}
+                    
+                    <button class="btn btn-outline-primary w-100" data-bs-toggle="modal" data-bs-target="#contactModal">
+                        <i class="fas fa-phone-alt me-2"></i> Liên hệ tư vấn
+                    </button>
+                </div>
+                
+                <!-- Tour Features -->
+                <div class="card mb-4">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0">Tính năng nổi bật</h5>
+                    </div>
+                    <div class="card-body">
+                        <ul class="tour-features">
+                            <li>Đảm bảo khởi hành</li>
+                            <li>Có hướng dẫn viên</li>
+                            <li>Bữa ăn theo chương trình</li>
+                            <li>Khách sạn tiêu chuẩn</li>
+                            <li>Bảo hiểm du lịch</li>
+                            <li>Vé tham quan</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <!-- Promotion -->
+                <div class="card mb-4 bg-light">
+                    <div class="card-body">
+                        <h5 class="card-title"><i class="fas fa-gift text-primary me-2"></i> Ưu đãi đặc biệt</h5>
+                        <ul class="mb-0 ps-3">
+                            <li>Giảm ngay 5% cho nhóm từ 5 người trở lên</li>
+                            <li>Tặng voucher giảm 10% cho tour tiếp theo</li>
+                            <li>Miễn phí trẻ em dưới 2 tuổi</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <!-- Need Help -->
+                <div class="card mb-4">
+                    <div class="card-body text-center">
+                        <h5 class="card-title">Cần hỗ trợ?</h5>
+                        <p class="card-text">Liên hệ với chúng tôi để được tư vấn</p>
+                        <p><i class="fas fa-phone-alt text-primary me-2"></i> 1900 1234</p>
+                        <p><i class="fas fa-envelope text-primary me-2"></i> info@Sangdulichviet.com</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Contact Modal -->
+<div class="modal fade" id="contactModal" tabindex="-1" aria-labelledby="contactModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="contactModalLabel">Liên hệ tư vấn</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <div class="mb-3">
+                        <label for="contactName" class="form-label">Họ và tên</label>
+                        <input type="text" class="form-control" id="contactName" placeholder="Nhập họ và tên">
+                    </div>
+                    <div class="mb-3">
+                        <label for="contactPhone" class="form-label">Số điện thoại</label>
+                        <input type="tel" class="form-control" id="contactPhone" placeholder="Nhập số điện thoại">
+                    </div>
+                    <div class="mb-3">
+                        <label for="contactEmail" class="form-label">Email</label>
+                        <input type="email" class="form-control" id="contactEmail" placeholder="Nhập email">
+                    </div>
+                    <div class="mb-3">
+                        <label for="contactMessage" class="form-label">Nội dung</label>
+                        <textarea class="form-control" id="contactMessage" rows="3" placeholder="Nhập nội dung cần tư vấn"></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                <button type="button" class="btn btn-primary">Gửi yêu cầu</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

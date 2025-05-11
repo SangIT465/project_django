@@ -1,0 +1,279 @@
+{% extends 'base.html' %}
+
+{% block title %}Du Lịch Việt - Đặt Tour Du Lịch Uy Tín, Giá Rẻ{% endblock %}
+
+{% block content %}
+
+<style>
+    .hero-section {
+    position: relative;
+    background-image: url('https://designercomvn.s3.ap-southeast-1.amazonaws.com/wp-content/uploads/2017/10/26015637/dich-vu-thiet-ke-banner-du-lich-chuyen-nghiep-tai-ha-noi1.jpg');
+    background-size: cover;
+    background-position: center;
+    color: #fff;
+    padding: 100px 0;
+}
+
+.hero-content {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    z-index: 2;
+}
+
+.hero-title {
+    font-size: 3rem;
+    font-weight: bold;
+    margin-bottom: 20px;
+}
+
+.hero-subtitle {
+    font-size: 1.2rem;
+    margin-bottom: 30px;
+}
+
+.search-box {
+    position: relative;
+    z-index: 3;
+    background: rgba(0, 0, 0, 0.6); /* Để làm mờ nền phía sau */
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
+}
+
+.search-box-title {
+    color: #fff;
+    margin-bottom: 20px;
+}
+
+.search-box form {
+    color: #fff;
+}
+
+</style>
+
+<!-- Hero Section with Search Box -->
+<section class="hero-section">
+    <div class="container">
+        <div class="hero-content">
+            <h1 class="hero-title">Khám Phá Thế Giới Cùng Du Lịch Việt</h1>
+            <p class="hero-subtitle">Trải nghiệm du lịch tuyệt vời với những tour chất lượng, giá cả hợp lý</p>
+            <a href="{% url 'tours:tour_list' %}" class="btn btn-primary btn-lg">Khám phá ngay</a>
+        </div>
+        
+        <!-- Banner Image -->
+       <div class="banner-image">
+            <img src="https://designercomvn.s3.ap-southeast-1.amazonaws.com/wp-content/uploads/2017/10/26015637/dich-vu-thiet-ke-banner-du-lich-chuyen-nghiep-tai-ha-noi1.jpg" alt="Du Lịch Việt" class="img-fluid">
+        </div>
+
+        <!-- Search Box -->
+        <div class="search-box">
+            <h3 class="search-box-title text-center">Tìm Kiếm Tour Du Lịch</h3>
+            <form id="searchForm" action="{% url 'tours:tour_list' %}" method="get">
+                <div class="row">
+                    <div class="col-md-4 mb-3">
+                        <label for="id_destination" class="form-label">Điểm đến</label>
+                        <select name="destination" id="id_destination" class="form-select">
+                            <option value="">Tất cả điểm đến</option>
+                            {% for destination in popular_destinations %}
+                                <option value="{{ destination.id }}">{{ destination.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label for="id_date_from" class="form-label">Từ ngày</label>
+                        <input type="text" name="date_from" id="id_date_from" class="form-control datepicker" placeholder="Chọn ngày">
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label for="id_date_to" class="form-label">Đến ngày</label>
+                        <input type="text" name="date_to" id="id_date_to" class="form-control datepicker" placeholder="Chọn ngày">
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-4 mb-3">
+                        <label for="id_price_min" class="form-label">Giá từ</label>
+                        <input type="number" name="price_min" id="id_price_min" class="form-control" placeholder="Giá thấp nhất">
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label for="id_price_max" class="form-label">Đến</label>
+                        <input type="number" name="price_max" id="id_price_max" class="form-control" placeholder="Giá cao nhất">
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label">&nbsp;</label>
+                        <button type="submit" class="btn btn-primary w-100">Tìm Kiếm</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</section>
+
+
+<!-- Featured Tours Section -->
+<section class="py-5">
+    <div class="container">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2 class="section-title">Tour Nổi Bật</h2>
+            <a href="{% url 'tours:tour_list' %}" class="btn btn-outline-primary">Xem tất cả</a>
+        </div>
+        
+        <div class="row">
+            {% for tour in featured_tours %}
+                <div class="col-md-6 col-lg-3 mb-4">
+                    {% include 'components/tour_card.html' with tour=tour %}
+                </div>
+            {% empty %}
+                <div class="col-12">
+                    <div class="alert alert-info">Không có tour nổi bật nào.</div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- Popular Destinations Section -->
+<section class="py-5 bg-light">
+    <div class="container">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2 class="section-title">Điểm Đến Phổ Biến</h2>
+            <a href="{% url 'tours:tour_list' %}" class="btn btn-outline-primary">Xem tất cả</a>
+        </div>
+        
+        <div class="row">
+            {% for destination in popular_destinations %}
+                <div class="col-md-6 col-lg-4 mb-4">
+                    <div class="destination-card">
+                        <a href="{% url 'tours:tours_by_destination' destination_slug=destination.slug %}">
+                            <img src="{{ destination.image }}" alt="{{ destination.name }}">
+                            <div class="destination-card-content">
+                                <h4 class="destination-card-title">{{ destination.name }}</h4>
+                                <p class="mb-0">Khám phá ngay</p>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            {% empty %}
+                <div class="col-12">
+                    <div class="alert alert-info">Không có điểm đến nào.</div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- Why Choose Us Section -->
+<section class="py-5">
+    <div class="container">
+        <h2 class="section-title text-center mb-5">Tại Sao Chọn Du Lịch Việt?</h2>
+        
+        <div class="row">
+            <div class="col-md-3 mb-4 text-center">
+                <div class="p-4">
+                    <i class="fas fa-tag fa-3x text-primary mb-3"></i>
+                    <h5>Giá Cả Hợp Lý</h5>
+                    <p>Chúng tôi cam kết mang đến cho bạn những tour du lịch chất lượng với giá thành tốt nhất.</p>
+                </div>
+            </div>
+            <div class="col-md-3 mb-4 text-center">
+                <div class="p-4">
+                    <i class="fas fa-headset fa-3x text-primary mb-3"></i>
+                    <h5>Hỗ Trợ 24/7</h5>
+                    <p>Đội ngũ tư vấn viên luôn sẵn sàng hỗ trợ bạn mọi lúc, mọi nơi.</p>
+                </div>
+            </div>
+            <div class="col-md-3 mb-4 text-center">
+                <div class="p-4">
+                    <i class="fas fa-map-marked-alt fa-3x text-primary mb-3"></i>
+                    <h5>Điểm Đến Đa Dạng</h5>
+                    <p>Hàng trăm tour du lịch trong nước và quốc tế, đáp ứng mọi nhu cầu của bạn.</p>
+                </div>
+            </div>
+            <div class="col-md-3 mb-4 text-center">
+                <div class="p-4">
+                    <i class="fas fa-heart fa-3x text-primary mb-3"></i>
+                    <h5>Trải Nghiệm Tuyệt Vời</h5>
+                    <p>Chúng tôi không chỉ bán tour, mà còn mang đến những trải nghiệm đáng nhớ.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Testimonials Section -->
+<section class="py-5 bg-light">
+    <div class="container">
+        <h2 class="section-title text-center mb-5">Khách Hàng Nói Gì Về Chúng Tôi</h2>
+        
+        <div id="testimonialsCarousel" class="carousel slide" data-bs-ride="carousel">
+            <div class="carousel-inner">
+                <div class="carousel-item active">
+                    <div class="row justify-content-center">
+                        <div class="col-lg-6">
+                            <div class="p-4 bg-white rounded shadow-sm text-center">
+                                <div class="mb-3">
+                                    <i class="fas fa-star text-warning"></i>
+                                    <i class="fas fa-star text-warning"></i>
+                                    <i class="fas fa-star text-warning"></i>
+                                    <i class="fas fa-star text-warning"></i>
+                                    <i class="fas fa-star text-warning"></i>
+                                </div>
+                                <p class="mb-4">"Tour Đà Nẵng - Hội An rất tuyệt vời! Hướng dẫn viên nhiệt tình, lịch trình hợp lý, khách sạn sạch sẽ. Chắc chắn sẽ đặt tour của Du Lịch Việt trong tương lai."</p>
+                                <h5 class="mb-1">Trần Đức Phi Long</h5>
+                                <p class="text-muted">Quảng Nam</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="carousel-item">
+                    <div class="row justify-content-center">
+                        <div class="col-lg-6">
+                            <div class="p-4 bg-white rounded shadow-sm text-center">
+                                <div class="mb-3">
+                                    <i class="fas fa-star text-warning"></i>
+                                    <i class="fas fa-star text-warning"></i>
+                                    <i class="fas fa-star text-warning"></i>
+                                    <i class="fas fa-star text-warning"></i>
+                                    <i class="fas fa-star text-warning"></i>
+                                </div>
+                                <p class="mb-4">"Lần đầu tiên đi du lịch Phú Quốc và đã có trải nghiệm tuyệt vời nhờ Du Lịch Việt. Dịch vụ chuyên nghiệp, đồ ăn ngon, giá cả phải chăng."</p>
+                                <h5 class="mb-1">Trần Văn Hiệp</h5>
+                                <p class="text-muted">TP.HCM</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <button class="carousel-control-prev" type="button" data-bs-target="#testimonialsCarousel" data-bs-slide="prev">
+                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Trước</span>
+            </button>
+            <button class="carousel-control-next" type="button" data-bs-target="#testimonialsCarousel" data-bs-slide="next">
+                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Sau</span>
+            </button>
+        </div>
+    </div>
+</section>
+
+<!-- Subscribe Section -->
+<section class="py-5 bg-primary text-white">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-6 mb-4 mb-lg-0">
+                <h3>Đăng Ký Nhận Thông Tin</h3>
+                <p>Nhận thông tin về ưu đãi và tour mới nhất từ Du Lịch Việt</p>
+            </div>
+            <div class="col-lg-6">
+                <form action="#" method="post">
+                    <div class="input-group">
+                        <input type="email" class="form-control" placeholder="Nhập email của bạn">
+                        <button class="btn btn-light" type="submit">Đăng Ký</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

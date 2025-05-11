@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ category.name }} - Du Lịch Việt{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div class="container">
+        <h1 class="display-4">{{ category.name }}</h1>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{% url 'core:home' %}" class="text-white">Trang chủ</a></li>
+                <li class="breadcrumb-item"><a href="{% url 'tours:tour_list' %}" class="text-white">Tour du lịch</a></li>
+                <li class="breadcrumb-item active text-white" aria-current="page">{{ category.name }}</li>
+            </ol>
+        </nav>
+    </div>
+</div>
+
+<section class="py-5">
+    <div class="container">
+        <div class="row">
+            <div class="col-12 mb-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h2 class="card-title">Giới thiệu về {{ category.name }}</h2>
+                        <p class="card-text">{{ category.description }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <h2 class="section-title mb-4">Danh sách tour {{ category.name }}</h2>
+        
+        <!-- Tour List -->
+        <div class="row">
+            {% for tour in tours %}
+                <div class="col-md-6 col-lg-4 mb-4">
+                    {% include 'components/tour_card.html' with tour=tour %}
+                </div>
+            {% empty %}
+                <div class="col-12">
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle me-2"></i> Hiện không có tour nào thuộc loại {{ category.name }}.
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+        
+        <!-- Pagination -->
+        {% include 'components/pagination.html' with page_obj=tours %}
+    </div>
+</section>
+{% endblock %}

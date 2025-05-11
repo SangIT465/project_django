@@ -1,0 +1,96 @@
+{% extends 'base.html' %}
+
+{% block title %}Tour Du Lịch - Du Lịch Việt{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div class="container">
+        <h1 class="display-4">Tour Du Lịch</h1>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{% url 'core:home' %}" class="text-white">Trang chủ</a></li>
+                <li class="breadcrumb-item active text-white" aria-current="page">Tour du lịch</li>
+            </ol>
+        </nav>
+    </div>
+</div>
+
+<section class="py-5">
+    <div class="container">
+        <div class="row">
+            <!-- Sidebar -->
+            <div class="col-lg-3">
+                <button id="filterToggle" class="btn btn-primary d-lg-none w-100 mb-3">Hiện bộ lọc</button>
+                <div id="filterContent" class="d-none d-lg-block">
+                    {% include 'components/search_form.html' %}
+                </div>
+            </div>
+            
+            <!-- Tours List -->
+            <div class="col-lg-9">
+                <!-- Sort Options -->
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h2 class="h5 mb-0">Hiện tại {{ tours.paginator.count }} tours</h2>
+                    <div class="d-flex align-items-center">
+                        <label for="sort" class="me-2 mb-0">Sắp xếp:</label>
+                        <select id="sort" class="form-select form-select-sm" style="width: auto;" onchange="window.location.href=this.value">
+                            <option value="?{% for key, value in search_params.items %}{% if key != 'sort' and key != 'page' %}{{ key }}={{ value }}&{% endif %}{% endfor %}sort=default" {% if not search_params.sort or search_params.sort == 'default' %}selected{% endif %}>Mặc định</option>
+                            <option value="?{% for key, value in search_params.items %}{% if key != 'sort' and key != 'page' %}{{ key }}={{ value }}&{% endif %}{% endfor %}sort=price_asc" {% if search_params.sort == 'price_asc' %}selected{% endif %}>Giá tăng dần</option>
+                            <option value="?{% for key, value in search_params.items %}{% if key != 'sort' and key != 'page' %}{{ key }}={{ value }}&{% endif %}{% endfor %}sort=price_desc" {% if search_params.sort == 'price_desc' %}selected{% endif %}>Giá giảm dần</option>
+                            <option value="?{% for key, value in search_params.items %}{% if key != 'sort' and key != 'page' %}{{ key }}={{ value }}&{% endif %}{% endfor %}sort=duration_asc" {% if search_params.sort == 'duration_asc' %}selected{% endif %}>Thời gian ngắn nhất</option>
+                            <option value="?{% for key, value in search_params.items %}{% if key != 'sort' and key != 'page' %}{{ key }}={{ value }}&{% endif %}{% endfor %}sort=duration_desc" {% if search_params.sort == 'duration_desc' %}selected{% endif %}>Thời gian dài nhất</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <!-- Tour Cards -->
+                <div class="row">
+                    {% for tour in tours %}
+                        <div class="col-md-6 col-lg-4 mb-4">
+                            {% include 'components/tour_card.html' with tour=tour %}
+                        </div>
+                    {% empty %}
+                        <div class="col-12">
+                            <div class="alert alert-info">
+                                <i class="fas fa-info-circle me-2"></i> Không tìm thấy tour nào phù hợp với tiêu chí tìm kiếm của bạn.
+                            </div>
+                            <p>Gợi ý:</p>
+                            <ul>
+                                <li>Thử mở rộng phạm vi tìm kiếm hoặc sử dụng ít bộ lọc hơn</li>
+                                <li>Kiểm tra lại điểm đến hoặc ngày đi</li>
+                                <li>Điều chỉnh khoảng giá</li>
+                            </ul>
+                            <a href="{% url 'tours:tour_list' %}" class="btn btn-outline-primary">Xem tất cả tour</a>
+                        </div>
+                    {% endfor %}
+                </div>
+                
+                <!-- Pagination -->
+                {% include 'components/pagination.html' with page_obj=tours search_params=search_params %}
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Filter toggle for mobile
+        const filterToggle = document.querySelector('#filterToggle');
+        const filterContent = document.querySelector('#filterContent');
+        
+        if (filterToggle && filterContent) {
+            filterToggle.addEventListener('click', function() {
+                if (filterContent.classList.contains('d-none')) {
+                    filterContent.classList.remove('d-none');
+                    filterToggle.textContent = 'Ẩn bộ lọc';
+                } else {
+                    filterContent.classList.add('d-none');
+                    filterToggle.textContent = 'Hiện bộ lọc';
+                }
+            });
+        }
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,151 @@
+{% extends 'base.html' %}
+
+{% block title %}Đăng ký - Du Lịch Việt{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div class="container">
+        <h1 class="display-4">Đăng ký tài khoản</h1>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{% url 'core:home' %}" class="text-white">Trang chủ</a></li>
+                <li class="breadcrumb-item active text-white" aria-current="page">Đăng ký</li>
+            </ol>
+        </nav>
+    </div>
+</div>
+
+<section class="py-5">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-header bg-primary text-white">
+                        <h4 class="mb-0">Đăng ký tài khoản</h4>
+                    </div>
+                    <div class="card-body">
+                        <form method="post" action="{% url 'accounts:register' %}">
+                            {% csrf_token %}
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="{{ form.username.id_for_label }}" class="form-label">Tên đăng nhập <span class="text-danger">*</span></label>
+                                    {{ form.username }}
+                                    {% if form.username.errors %}
+                                        <div class="text-danger">{{ form.username.errors.0 }}</div>
+                                    {% endif %}
+                                    <div class="form-text">Tên đăng nhập phải là duy nhất</div>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="{{ form.email.id_for_label }}" class="form-label">Email <span class="text-danger">*</span></label>
+                                    {{ form.email }}
+                                    {% if form.email.errors %}
+                                        <div class="text-danger">{{ form.email.errors.0 }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="{{ form.first_name.id_for_label }}" class="form-label">Tên</label>
+                                    {{ form.first_name }}
+                                    {% if form.first_name.errors %}
+                                        <div class="text-danger">{{ form.first_name.errors.0 }}</div>
+                                    {% endif %}
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="{{ form.last_name.id_for_label }}" class="form-label">Họ</label>
+                                    {{ form.last_name }}
+                                    {% if form.last_name.errors %}
+                                        <div class="text-danger">{{ form.last_name.errors.0 }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="{{ form.password.id_for_label }}" class="form-label">Mật khẩu <span class="text-danger">*</span></label>
+                                    {{ form.password }}
+                                    {% if form.password.errors %}
+                                        <div class="text-danger">{{ form.password.errors.0 }}</div>
+                                    {% endif %}
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="{{ form.confirm_password.id_for_label }}" class="form-label">Xác nhận mật khẩu <span class="text-danger">*</span></label>
+                                    {{ form.confirm_password }}
+                                    {% if form.confirm_password.errors %}
+                                        <div class="text-danger">{{ form.confirm_password.errors.0 }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            
+                            {% if form.non_field_errors %}
+                                <div class="alert alert-danger">
+                                    {% for error in form.non_field_errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                            
+                            <div class="mb-3 form-check">
+                                <input type="checkbox" class="form-check-input" id="terms" required>
+                                <label class="form-check-label" for="terms">
+                                    Tôi đồng ý với <a href="#" data-bs-toggle="modal" data-bs-target="#termsModal">điều khoản và điều kiện</a> của Du Lịch Việt
+                                </label>
+                            </div>
+                            
+                            <div class="d-grid">
+                                <button type="submit" class="btn btn-primary">Đăng ký</button>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="card-footer text-center">
+                        <p class="mb-0">Đã có tài khoản? <a href="{% url 'accounts:login' %}">Đăng nhập</a></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Terms Modal -->
+<div class="modal fade" id="termsModal" tabindex="-1" aria-labelledby="termsModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="termsModalLabel">Điều khoản và điều kiện</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <h6>1. Điều khoản sử dụng tài khoản</h6>
+                <p>Khi đăng ký và sử dụng tài khoản Du Lịch Việt, bạn đồng ý tuân thủ những điều khoản sau:</p>
+                <ul>
+                    <li>Cung cấp thông tin chính xác và đầy đủ khi đăng ký tài khoản</li>
+                    <li>Bảo mật thông tin tài khoản và mật khẩu của bạn</li>
+                    <li>Chịu trách nhiệm về tất cả các hoạt động diễn ra dưới tài khoản của bạn</li>
+                    <li>Thông báo ngay cho chúng tôi về bất kỳ truy cập trái phép nào</li>
+                </ul>
+                
+                <h6>2. Quyền riêng tư và bảo mật</h6>
+                <p>Du Lịch Việt cam kết bảo vệ thông tin cá nhân của bạn. Chúng tôi chỉ thu thập, sử dụng và chia sẻ thông tin theo chính sách bảo mật của chúng tôi.</p>
+                
+                <h6>3. Sử dụng dịch vụ</h6>
+                <p>Khi sử dụng dịch vụ của Du Lịch Việt, bạn đồng ý:</p>
+                <ul>
+                    <li>Tuân thủ pháp luật Việt Nam và quốc tế</li>
+                    <li>Không sử dụng dịch vụ cho mục đích bất hợp pháp</li>
+                    <li>Không can thiệp vào hoạt động bình thường của trang web</li>
+                </ul>
+                
+                <h6>4. Đặt tour và thanh toán</h6>
+                <p>Khi đặt tour thông qua tài khoản của bạn, bạn đồng ý với các điều khoản đặt tour và chính sách thanh toán của chúng tôi.</p>
+                
+                <h6>5. Thay đổi điều khoản</h6>
+                <p>Du Lịch Việt có quyền thay đổi điều khoản và điều kiện này vào bất kỳ lúc nào. Chúng tôi sẽ thông báo cho bạn về những thay đổi quan trọng.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

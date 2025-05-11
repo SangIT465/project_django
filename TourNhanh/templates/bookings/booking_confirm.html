@@ -1,0 +1,245 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load tour_extras %}
+
+{% block title %}Xác nhận đặt tour - Du Lịch Việt{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div class="container">
+        <h1 class="display-4">Xác nhận đặt tour</h1>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{% url 'core:home' %}" class="text-white">Trang chủ</a></li>
+                <li class="breadcrumb-item"><a href="{{ booking.tour.get_absolute_url }}" class="text-white">{{ booking.tour.title }}</a></li>
+                <li class="breadcrumb-item active text-white" aria-current="page">Xác nhận đặt tour</li>
+            </ol>
+        </nav>
+    </div>
+</div>
+
+<section class="py-5">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 mb-4 mb-lg-0">
+                <div class="card mb-4">
+                    <div class="card-header bg-primary text-white">
+                        <h4 class="mb-0">Thông tin đặt tour</h4>
+                    </div>
+                    <div class="card-body">
+                        <div class="row mb-4">
+                            <div class="col-md-6 mb-3 mb-md-0">
+                                <h5>Thông tin khách hàng</h5>
+                                <ul class="list-unstyled">
+                                    <li><strong>Họ tên:</strong> {{ booking.full_name }}</li>
+                                    <li><strong>Email:</strong> {{ booking.email }}</li>
+                                    <li><strong>Điện thoại:</strong> {{ booking.phone }}</li>
+                                    <li><strong>Địa chỉ:</strong> {{ booking.address }}</li>
+                                </ul>
+                            </div>
+                            <div class="col-md-6">
+                                <h5>Chi tiết tour</h5>
+                                <ul class="list-unstyled">
+                                    <li><strong>Tour:</strong> {{ booking.tour.title }}</li>
+                                    <li><strong>Ngày khởi hành:</strong> {{ booking.tour_date.start_date|date:"d/m/Y" }}</li>
+                                    <li><strong>Ngày kết thúc:</strong> {{ booking.tour_date.end_date|date:"d/m/Y" }}</li>
+                                    <li><strong>Thời gian:</strong> {{ booking.tour.duration }} ngày</li>
+                                </ul>
+                            </div>
+                        </div>
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-6 mb-3 mb-md-0">
+                                <h5>Số lượng hành khách</h5>
+                                <ul class="list-unstyled">
+                                    <li><strong>Người lớn:</strong> {{ booking.adults }} người</li>
+                                    <li><strong>Trẻ em:</strong> {{ booking.children }} người</li>
+                                    <li><strong>Tổng số:</strong> {{ booking.adults|add:booking.children }} người</li>
+                                </ul>
+                            </div>
+                            <div class="col-md-6">
+                                <h5>Yêu cầu đặc biệt</h5>
+                                <p>{% if booking.special_request %}{{ booking.special_request }}{% else %}Không có{% endif %}</p>
+                            </div>
+                        </div>
+                        
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle me-2"></i> Vui lòng kiểm tra kỹ thông tin trước khi tiến hành thanh toán.
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header bg-primary text-white">
+                        <h4 class="mb-0">Chọn phương thức thanh toán</h4>
+                    </div>
+                    <div class="card-body">
+                        <form method="post" action="{% url 'bookings:booking_confirm' booking_id=booking.id %}">
+                            {% csrf_token %}
+                            
+                            <div class="payment-methods mb-4">
+                                {% for choice_id, choice_label in form.payment_method.field.choices %}
+                                <div class="form-check mb-3">
+                                    <input class="form-check-input" type="radio" name="payment_method" id="payment_{{ choice_id }}" value="{{ choice_id }}" {% if forloop.first %}checked{% endif %}>
+                                    <label class="form-check-label" for="payment_{{ choice_id }}">
+                                        {{ choice_label }}
+                                    </label>
+                                </div>
+                                {% endfor %}
+                            </div>
+                            
+                            <div class="payment-details" id="bank_transfer_details" style="display: none;">
+                                <div class="alert alert-info">
+                                    <h5 class="alert-heading">Thanh toán chuyển khoản ngân hàng</h5>
+                                    <p>Sau khi xác nhận, bạn sẽ nhận được thông tin tài khoản ngân hàng để chuyển khoản.</p>
+                                </div>
+                            </div>
+                            
+                            <div class="payment-details" id="credit_card_details" style="display: none;">
+                                <div class="alert alert-info">
+                                    <h5 class="alert-heading">Thanh toán bằng thẻ tín dụng</h5>
+                                    <p>Bạn sẽ được chuyển đến trang thanh toán an toàn sau khi xác nhận.</p>
+                                </div>
+                            </div>
+                            
+                            <div class="payment-details" id="momo_details" style="display: none;">
+                                <div class="alert alert-info">
+                                    <h5 class="alert-heading">Thanh toán qua ví MoMo</h5>
+                                    <p>Bạn sẽ được chuyển đến trang thanh toán MoMo sau khi xác nhận.</p>
+                                </div>
+                            </div>
+                            
+                            <div class="payment-details" id="zalopay_details" style="display: none;">
+                                <div class="alert alert-info">
+                                    <h5 class="alert-heading">Thanh toán qua ZaloPay</h5>
+                                    <p>Bạn sẽ được chuyển đến trang thanh toán ZaloPay sau khi xác nhận.</p>
+                                </div>
+                            </div>
+                            
+                            <div class="payment-details" id="cash_details" style="display: none;">
+                                <div class="alert alert-info">
+                                    <h5 class="alert-heading">Thanh toán tiền mặt</h5>
+                                    <p>Vui lòng đến văn phòng công ty Du Lịch Việt để thanh toán tiền mặt.</p>
+                                    <p><strong>Địa chỉ:</strong> 123 Đường Lê Lợi, Quận 1, TP. Hồ Chí Minh</p>
+                                    <p><strong>Giờ làm việc:</strong> 8:00 - 17:30 (Thứ Hai - Thứ Bảy)</p>
+                                </div>
+                            </div>
+                            
+                            <div class="form-check mb-3">
+                                <input class="form-check-input" type="checkbox" id="terms" required>
+                                <label class="form-check-label" for="terms">
+                                    Tôi đã đọc và đồng ý với <a href="#" data-bs-toggle="modal" data-bs-target="#termsModal">điều khoản và điều kiện</a> của Du Lịch Việt
+                                </label>
+                            </div>
+                            
+                            <div class="d-grid">
+                                <button type="submit" class="btn btn-primary btn-lg">Tiếp tục thanh toán</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-4">
+                <div class="card mb-4">
+                    <div class="card-header bg-primary text-white">
+                        <h4 class="mb-0">Tóm tắt đơn hàng</h4>
+                    </div>
+                    <div class="card-body">
+                        <h5>{{ booking.tour.title }}</h5>
+                        <p class="text-muted">{{ booking.tour_date.start_date|date:"d/m/Y" }} - {{ booking.tour_date.end_date|date:"d/m/Y" }}</p>
+                        
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>Giá tour/người lớn:</span>
+                            <span>{{ booking.tour_date.tour_price|floatformat:0 }} VNĐ</span>
+                        </div>
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>Người lớn x {{ booking.adults }}:</span>
+                            <span>{{ booking.adults|multiply:booking.tour_date.tour_price|floatformat:0 }} VNĐ</span>
+                        </div>
+                        <div class="d-flex justify-content-between mb-3">
+                            <span>Trẻ em x {{ booking.children }}:</span>
+                            <span>{{ booking.children|multiply:booking.tour_date.tour_price|multiply:0.7|floatformat:0 }} VNĐ</span>
+                        </div>
+                        
+                        <div class="d-flex justify-content-between pt-3 border-top">
+                            <strong>Tổng cộng:</strong>
+                            <strong class="text-primary">{{ booking.total_price|floatformat:0 }} VNĐ</strong>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <h5 class="card-title"><i class="fas fa-shield-alt text-primary me-2"></i> Cam kết của chúng tôi</h5>
+                        <ul class="list-unstyled mb-0">
+                            <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i> Giá tốt nhất đảm bảo</li>
+                            <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i> Dịch vụ chất lượng cao</li>
+                            <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i> Hỗ trợ 24/7</li>
+                            <li><i class="fas fa-check-circle text-success me-2"></i> Thanh toán an toàn, bảo mật</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title"><i class="fas fa-headset text-primary me-2"></i> Hỗ trợ khách hàng</h5>
+                        <p>Nếu bạn có thắc mắc hoặc cần hỗ trợ, vui lòng liên hệ:</p>
+                        <ul class="list-unstyled mb-0">
+                            <li class="mb-2"><i class="fas fa-phone text-primary me-2"></i> 1900 1234</li>
+                            <li><i class="fas fa-envelope text-primary me-2"></i> support@dulichviet.com</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Terms Modal -->
+<div class="modal fade" id="termsModal" tabindex="-1" aria-labelledby="termsModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="termsModalLabel">Điều khoản và điều kiện</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <h6>1. Điều kiện đặt tour</h6>
+                <p>Khi đặt tour, quý khách vui lòng đặt cọc 50% tổng giá trị tour. Phần còn lại sẽ được thanh toán trước ngày khởi hành ít nhất 03 ngày.</p>
+                
+                <h6>2. Chính sách hủy tour</h6>
+                <ul>
+                    <li>Hủy tour trước 15 ngày: Hoàn trả 90% tổng giá trị tour</li>
+                    <li>Hủy tour từ 8-14 ngày: Hoàn trả 70% tổng giá trị tour</li>
+                    <li>Hủy tour từ 4-7 ngày: Hoàn trả 50% tổng giá trị tour</li>
+                    <li>Hủy tour trong vòng 3 ngày: Không hoàn trả phí tour</li>
+                </ul>
+                
+                <h6>3. Quy định về trẻ em</h6>
+                <ul>
+                    <li>Trẻ em dưới 2 tuổi: Miễn phí (cha mẹ tự lo ăn uống, chỗ ngủ)</li>
+                    <li>Trẻ em từ 2-11 tuổi: Tính 70% giá tour người lớn</li>
+                    <li>Trẻ em từ 12 tuổi trở lên: Tính giá như người lớn</li>
+                </ul>
+                
+                <h6>4. Giấy tờ tùy thân</h6>
+                <p>Quý khách vui lòng mang theo giấy tờ tùy thân (CMND/CCCD/Hộ chiếu) khi đi tour. Đối với tour nước ngoài, hộ chiếu phải còn hạn sử dụng ít nhất 6 tháng kể từ ngày kết thúc tour.</p>
+                
+                <h6>5. Bảo hiểm du lịch</h6>
+                <p>Quý khách được bảo hiểm du lịch trong suốt thời gian tham gia tour với mức đền bù tối đa 20.000.000 VNĐ/người/vụ.</p>
+                
+                <h6>6. Thay đổi lịch trình</h6>
+                <p>Công ty có quyền thay đổi lịch trình tour vì lý do bất khả kháng (thời tiết, thiên tai, dịch bệnh...) hoặc vì lý do an toàn cho du khách.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/booking.js' %}"></script>
+{% endblock %}

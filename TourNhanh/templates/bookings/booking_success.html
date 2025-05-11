@@ -1,0 +1,141 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load tour_extras %}
+
+{% block title %}Đặt tour thành công - Du Lịch Việt{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div class="container">
+        <h1 class="display-4">Đặt tour thành công</h1>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{% url 'core:home' %}" class="text-white">Trang chủ</a></li>
+                <li class="breadcrumb-item active text-white" aria-current="page">Đặt tour thành công</li>
+            </ol>
+        </nav>
+    </div>
+</div>
+
+<section class="py-5">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="card mb-4">
+                    <div class="card-body text-center py-5">
+                        <div class="mb-4">
+                            <i class="fas fa-check-circle text-success" style="font-size: 5rem;"></i>
+                        </div>
+                        <h3 class="mb-3">Cảm ơn bạn đã đặt tour!</h3>
+                        <p class="lead mb-3">Đơn đặt tour của bạn đã được xác nhận.</p>
+                        <p class="mb-4">Mã đặt tour: <strong>{{ booking.booking_number }}</strong></p>
+                        
+                        {% if booking.payment_status %}
+                            <div class="alert alert-success mb-4">
+                                <i class="fas fa-money-check-alt me-2"></i> Thanh toán đã hoàn tất. Cảm ơn bạn!
+                            </div>
+                        {% else %}
+                            {% if booking.payment_method == 'bank_transfer' %}
+                                <div class="alert alert-info mb-4">
+                                    <p>Vui lòng hoàn tất thanh toán bằng chuyển khoản ngân hàng.</p>
+                                    <p>Thông tin thanh toán đã được gửi đến email của bạn.</p>
+                                </div>
+                            {% elif booking.payment_method == 'cash' %}
+                                <div class="alert alert-info mb-4">
+                                    <p>Vui lòng đến văn phòng của Du Lịch Việt để hoàn tất thanh toán.</p>
+                                    <p>Địa chỉ: 123 Đường Lê Lợi, Quận 1, TP. Hồ Chí Minh</p>
+                                </div>
+                            {% endif %}
+                        {% endif %}
+                        
+                        <p>Chúng tôi đã gửi email xác nhận đến <strong>{{ booking.email }}</strong> với đầy đủ thông tin chi tiết về tour của bạn.</p>
+                    </div>
+                </div>
+                
+                <div class="card mb-4">
+                    <div class="card-header bg-primary text-white">
+                        <h4 class="mb-0">Thông tin tour</h4>
+                    </div>
+                    <div class="card-body">
+                        <div class="row mb-4">
+                            <div class="col-md-6 mb-3 mb-md-0">
+                                <h5>{{ booking.tour.title }}</h5>
+                                <p class="text-muted">{{ booking.tour.short_description|truncatechars:100 }}</p>
+                            </div>
+                            <div class="col-md-6">
+                                <ul class="list-unstyled">
+                                    <li><strong>Ngày khởi hành:</strong> {{ booking.tour_date.start_date|date:"d/m/Y" }}</li>
+                                    <li><strong>Ngày kết thúc:</strong> {{ booking.tour_date.end_date|date:"d/m/Y" }}</li>
+                                    <li><strong>Thời gian:</strong> {{ booking.tour.duration }} ngày</li>
+                                    <li><strong>Điểm đến:</strong> {{ booking.tour.destination.name }}</li>
+                                </ul>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3 mb-md-0">
+                                <h5>Thông tin hành khách</h5>
+                                <ul class="list-unstyled">
+                                    <li><strong>Người lớn:</strong> {{ booking.adults }} người</li>
+                                    <li><strong>Trẻ em:</strong> {{ booking.children }} người</li>
+                                    <li><strong>Tổng số:</strong> {{ booking.adults|add:booking.children }} người</li>
+                                </ul>
+                            </div>
+                            <div class="col-md-6">
+                                <h5>Thông tin thanh toán</h5>
+                                <ul class="list-unstyled">
+                                    <li><strong>Tổng tiền:</strong> {{ booking.total_price|floatformat:0 }} VNĐ</li>
+                                    <li><strong>Phương thức:</strong> {{ booking.get_payment_method_display }}</li>
+                                    <li><strong>Trạng thái:</strong> {% if booking.payment_status %}Đã thanh toán{% else %}Chờ thanh toán{% endif %}</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card mb-4">
+                    <div class="card-header bg-light">
+                        <h4 class="mb-0">Thông tin liên hệ</h4>
+                    </div>
+                    <div class="card-body">
+                        <p class="mb-3">Nếu bạn có bất kỳ câu hỏi nào về đơn đặt tour, vui lòng liên hệ chúng tôi:</p>
+                        <ul class="list-unstyled">
+                            <li class="mb-2"><i class="fas fa-phone text-primary me-2"></i> Hotline: 1900 1234</li>
+                            <li class="mb-2"><i class="fas fa-envelope text-primary me-2"></i> Email: support@dulichviet.com</li>
+                            <li><i class="fas fa-headset text-primary me-2"></i> Giờ làm việc: 8:00 - 17:30 (Thứ Hai - Thứ Bảy)</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="text-center">
+                    <a href="{% url 'core:home' %}" class="btn btn-primary me-2">Trở về trang chủ</a>
+                    {% if user.is_authenticated %}
+                        <a href="{% url 'bookings:booking_history' %}" class="btn btn-outline-primary">Xem lịch sử đặt tour</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Recommended Tours -->
+<section class="py-5 bg-light">
+    <div class="container">
+        <h3 class="text-center mb-4">Tour đề xuất cho bạn</h3>
+        <div class="row">
+            {% for tour in recommended_tours|default:"" %}
+                <div class="col-md-3 mb-4">
+                    {% include 'components/tour_card.html' with tour=tour %}
+                </div>
+            {% empty %}
+                <div class="col-12">
+                    <p class="text-center">Khám phá thêm các tour hấp dẫn của chúng tôi.</p>
+                    <div class="text-center">
+                        <a href="{% url 'tours:tour_list' %}" class="btn btn-outline-primary">Xem tất cả tour</a>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endblock %}

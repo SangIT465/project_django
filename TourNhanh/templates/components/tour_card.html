@@ -1,0 +1,28 @@
+<div class="tour-card">
+    <div class="position-relative">
+        <img src="{{ tour.main_image }}" alt="{{ tour.title }}" class="tour-card-img w-100">
+        {% if tour.is_on_sale %}
+            <span class="position-absolute top-0 end-0 badge bg-danger m-2">Giảm {{ tour.discount_percentage }}%</span>
+        {% endif %}
+    </div>
+    <div class="tour-card-body">
+        <h5 class="tour-card-title">
+            <a href="{{ tour.get_absolute_url }}">{{ tour.title }}</a>
+        </h5>
+        <div class="tour-card-location">
+            <i class="fas fa-map-marker-alt text-primary me-1"></i> {{ tour.destination.name }}
+        </div>
+        <div class="tour-card-duration mb-2">
+            <i class="fas fa-calendar-alt text-primary me-1"></i> {{ tour.duration }} ngày
+            <i class="fas fa-{{ tour.transport }} text-primary ms-2 me-1"></i> 
+            {{ tour.get_transport_display }}
+        </div>
+        <div class="tour-card-price">
+            {% if tour.is_on_sale %}
+                <del>{{ tour.price|floatformat:0 }} VNĐ</del>
+            {% endif %}
+            {{ tour.final_price|floatformat:0 }} VNĐ
+        </div>
+        <a href="{{ tour.get_absolute_url }}" class="btn btn-primary w-100">Xem chi tiết</a>
+    </div>
+</div>

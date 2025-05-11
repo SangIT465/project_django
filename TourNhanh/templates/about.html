@@ -1,0 +1,179 @@
+{% extends 'base.html' %}
+
+{% block title %}Giới thiệu - Du Lịch Việt{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div class="container">
+        <h1 class="display-4">Giới thiệu</h1>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{% url 'core:home' %}" class="text-white">Trang chủ</a></li>
+                <li class="breadcrumb-item active text-white" aria-current="page">Giới thiệu</li>
+            </ol>
+        </nav>
+    </div>
+</div>
+
+<section class="py-5">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-6 mb-4 mb-lg-0">
+                <h2 class="section-title">Về Du Lịch Việt</h2>
+                <p>Du Lịch Việt là một trong những công ty du lịch hàng đầu tại Việt Nam, chuyên cung cấp các dịch vụ du lịch chất lượng cao từ năm 2010. Chúng tôi tự hào mang đến cho khách hàng những trải nghiệm du lịch tuyệt vời với giá cả hợp lý.</p>
+                <p>Với đội ngũ nhân viên chuyên nghiệp, nhiệt tình và giàu kinh nghiệm, Du Lịch Việt cam kết mang đến cho quý khách những chuyến đi hoàn hảo, đáp ứng mọi nhu cầu từ cá nhân đến đoàn thể.</p>
+                <p>Chúng tôi không chỉ cung cấp dịch vụ tour du lịch trọn gói mà còn là đối tác đáng tin cậy trong việc tư vấn, lên kế hoạch cho các chuyến đi của quý khách.</p>
+            </div>
+            <div class="col-lg-6">
+                <img src="https://images.unsplash.com/photo-1464037866556-6812c9d1c72e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTR8fHRyYXZlbCUyMGFnZW5jeXxlbnwwfHwwfHx8MA%3D%3D&auto=format&fit=crop&w=600&q=60" alt="Du Lịch Việt Office" class="img-fluid rounded">
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="py-5 bg-light">
+    <div class="container">
+        <h2 class="section-title text-center mb-5">Sứ mệnh và Tầm nhìn</h2>
+        <div class="row">
+            <div class="col-md-6 mb-4">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <h4 class="card-title text-primary">Sứ mệnh</h4>
+                        <p class="card-text">Du Lịch Việt cam kết mang đến cho khách hàng những dịch vụ du lịch chất lượng cao với giá cả hợp lý. Chúng tôi luôn đặt sự hài lòng của khách hàng lên hàng đầu và không ngừng nỗ lực cải tiến dịch vụ để đáp ứng nhu cầu ngày càng cao của quý khách.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 mb-4">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <h4 class="card-title text-primary">Tầm nhìn</h4>
+                        <p class="card-text">Trở thành công ty du lịch hàng đầu tại Việt Nam, được khách hàng tin tưởng lựa chọn và được đối tác quốc tế đánh giá cao. Chúng tôi hướng đến việc xây dựng một thương hiệu du lịch Việt Nam uy tín, chuyên nghiệp trên thị trường quốc tế.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="py-5">
+    <div class="container">
+        <h2 class="section-title text-center mb-5">Giá trị cốt lõi</h2>
+        <div class="row">
+            <div class="col-md-3 mb-4">
+                <div class="text-center">
+                    <i class="fas fa-handshake fa-3x text-primary mb-3"></i>
+                    <h4>Uy tín</h4>
+                    <p>Luôn giữ chữ tín với khách hàng và đối tác, thực hiện đúng những cam kết đã đưa ra.</p>
+                </div>
+            </div>
+            <div class="col-md-3 mb-4">
+                <div class="text-center">
+                    <i class="fas fa-medal fa-3x text-primary mb-3"></i>
+                    <h4>Chất lượng</h4>
+                    <p>Đảm bảo chất lượng dịch vụ tốt nhất, luôn đáp ứng và vượt trên sự mong đợi của khách hàng.</p>
+                </div>
+            </div>
+            <div class="col-md-3 mb-4">
+                <div class="text-center">
+                    <i class="fas fa-heart fa-3x text-primary mb-3"></i>
+                    <h4>Tận tâm</h4>
+                    <p>Phục vụ khách hàng với tất cả sự tận tâm, luôn lắng nghe và đáp ứng mọi nhu cầu của khách hàng.</p>
+                </div>
+            </div>
+            <div class="col-md-3 mb-4">
+                <div class="text-center">
+                    <i class="fas fa-lightbulb fa-3x text-primary mb-3"></i>
+                    <h4>Sáng tạo</h4>
+                    <p>Không ngừng đổi mới, sáng tạo trong việc phát triển sản phẩm và dịch vụ du lịch.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="py-5 bg-light">
+    <div class="container">
+        <h2 class="section-title text-center mb-5">Đội ngũ của chúng tôi</h2>
+        <div class="row">
+            <div class="col-md-4 mb-4">
+                <div class="card text-center h-100">
+                    <div class="card-body">
+                        <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="CEO" class="rounded-circle mb-3" width="150">
+                        <h4 class="card-title">Nguyễn Văn A</h4>
+                        <p class="text-primary">Giám đốc điều hành</p>
+                        <p class="card-text">Với hơn 15 năm kinh nghiệm trong ngành du lịch, ông A đã góp phần xây dựng Du Lịch Việt trở thành một trong những công ty du lịch hàng đầu tại Việt Nam.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="card text-center h-100">
+                    <div class="card-body">
+                        <img src="https://randomuser.me/api/portraits/women/44.jpg" alt="Marketing Director" class="rounded-circle mb-3" width="150">
+                        <h4 class="card-title">Trần Văn Bảo</h4>
+                        <p class="text-primary">Giám đốc Marketing</p>
+                        <p class="card-text">Ông Bảo có hơn 10 năm kinh nghiệm trong lĩnh vực marketing du lịch, là người đứng sau những chiến dịch quảng bá thành công của Du Lịch Việt.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="card text-center h-100">
+                    <div class="card-body">
+                        <img src="https://randomuser.me/api/portraits/men/67.jpg" alt="Operations Manager" class="rounded-circle mb-3" width="150">
+                        <h4 class="card-title">Lê Văn Châu</h4>
+                        <p class="text-primary">Giám đốc Vận hành</p>
+                        <p class="card-text">Ông Châu đảm nhận vai trò quản lý vận hành, đảm bảo mọi dịch vụ của Du Lịch Việt luôn được triển khai một cách chuyên nghiệp và hiệu quả.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="py-5">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-6 mb-4 mb-lg-0">
+                <h2 class="section-title">Thành tựu của chúng tôi</h2>
+                <ul class="list-unstyled">
+                    <li class="mb-3">
+                        <i class="fas fa-trophy text-primary me-2"></i>
+                        <strong>Top 10 Công ty Du lịch Uy tín năm 2022</strong>
+                        <p class="ms-4">Do Hiệp hội Du lịch Việt Nam bình chọn</p>
+                    </li>
+                    <li class="mb-3">
+                        <i class="fas fa-trophy text-primary me-2"></i>
+                        <strong>Doanh nghiệp Du lịch Tiêu biểu 2021</strong>
+                        <p class="ms-4">Do Sở Du lịch TP.HCM trao tặng</p>
+                    </li>
+                    <li class="mb-3">
+                        <i class="fas fa-trophy text-primary me-2"></i>
+                        <strong>Thương hiệu Du lịch Được yêu thích nhất 2020</strong>
+                        <p class="ms-4">Do độc giả bình chọn qua Báo Du lịch Việt Nam</p>
+                    </li>
+                    <li class="mb-3">
+                        <i class="fas fa-trophy text-primary me-2"></i>
+                        <strong>Giải thưởng Chất lượng Dịch vụ 2019</strong>
+                        <p class="ms-4">Do Liên hiệp các Hiệp hội Doanh nghiệp Việt Nam trao tặng</p>
+                    </li>
+                </ul>
+            </div>
+            <div class="col-lg-6">
+                <div class="row">
+                    <div class="col-6 mb-4">
+                        <img src="https://images.unsplash.com/photo-1519160558534-579f5106e43f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=80" alt="Travel Award" class="img-fluid rounded">
+                    </div>
+                    <div class="col-6 mb-4">
+                        <img src="https://images.unsplash.com/photo-1515666781222-afe85a8e5dc0?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=80" alt="Travel Award" class="img-fluid rounded">
+                    </div>
+                    <div class="col-6">
+                        <img src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=80" alt="Team Photo" class="img-fluid rounded">
+                    </div>
+                    <div class="col-6">
+                        <img src="https://images.unsplash.com/photo-1450101499163-c8848c66ca85?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=80" alt="Office" class="img-fluid rounded">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
