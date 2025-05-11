@@ -1,1 +1,1 @@
-# project_django
+python manage.py runserver
